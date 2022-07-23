@@ -3,7 +3,7 @@ Github action responsible to authenticate/authorize calls made to workflows via 
 
 ## Policy
 
-```json
+```
 {
   "action": "action_name",
     "permissions": [{
@@ -13,4 +13,4 @@ Github action responsible to authenticate/authorize calls made to workflows via 
     "description": "action description",
     "inputs": ["actions","inputs","goes","here"] 
 }
-``` 
+```
