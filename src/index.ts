@@ -46,8 +46,6 @@ type policyType = {
 
 type triggerIntentType = {
   token: string,
-  repository: string,
-  organization: string,
   action: string
   workflowInputs: workflowInputs
 }
