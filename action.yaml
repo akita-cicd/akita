@@ -1,0 +1,5 @@
+name: 'akita'
+description: 'akita - authenticate workflows calls'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
