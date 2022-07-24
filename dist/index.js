@@ -6228,7 +6228,7 @@ function handler() {
         const payload = JSON.parse(external_fs_.readFileSync('payload.json').toString());
         const policies = yield getPolicies();
         const matchedPolicy = policies.filter((policy) => {
-            return policy.action === payload.client_payload.action;
+            return policy.action === payload.action;
         })[0];
         const claims = yield extractTokenClaims(payload.client_payload.token);
         const allowed = checkAllowed(claims, matchedPolicy);
