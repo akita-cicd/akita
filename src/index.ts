@@ -9,7 +9,7 @@ const GITHUB_JWKS_URL = 'https://token.actions.githubusercontent.com/.well-known
 
 interface workflowInputs { [key: string]: any }
 
-type githubType = {
+type githubClaimsType = {
   iss?: string
   sub?: string
   aud?: string | string[]
@@ -39,32 +39,34 @@ type githubType = {
 
 type policyType = {
   action: string,
-  permissions: githubType[],
+  permissions: githubClaimsType[],
   description?: string,
   inputs: string[]
 }
 
 type triggerIntentType = {
   token: string,
-  action: string
   workflowInputs: workflowInputs
 }
 
 type triggerType = {
   client_payload: triggerIntentType,
-  event_type: string
+  branch: string,
+  action: string
+  repository: any
+  sender: any
 }
 
-async function extractTokenClaims(token: string) : Promise<githubType> {
+async function extractTokenClaims(token: string) : Promise<githubClaimsType> {
   const JWKS = jose.createRemoteJWKSet(new URL(GITHUB_JWKS_URL));
   const {payload} = await jose.jwtVerify(token, JWKS, {
     issuer: ISSUER,
     audience: AUDIENCE,
   });
-  return payload as githubType;
+  return payload as githubClaimsType;
 }
 
-function checkAllowed(claims: githubType, policy: policyType): Boolean {
+function checkAllowed(claims: githubClaimsType, policy: policyType): Boolean {
   const allowed = policy.permissions.map((permission) => {
     const fullPermission = {
       ...claims,
@@ -88,7 +90,7 @@ async function handler() {
   const payload: triggerType = JSON.parse(fs.readFileSync('payload.json').toString());
   const policies: policyType[] = await getPolicies();
   const matchedPolicy = policies.filter((policy) => {
-    return policy.action === payload.client_payload.action;
+    return policy.action === payload.action;
   })[0];
   const claims = await extractTokenClaims(payload.client_payload.token);
   const allowed = checkAllowed(claims, matchedPolicy);
