@@ -4,6 +4,7 @@
     "rootDirs": [
       "src/"
     ],
+    "baseUrl": "\u0000",
     "paths": {
       "tests/*": [
         "tests/*"

@@ -2155,6 +2155,33 @@ var __webpack_exports__ = {};
 // ESM COMPAT FLAG
 __nccwpck_require__.r(__webpack_exports__);
 
+// EXTERNAL MODULE: external "fs"
+var external_fs_ = __nccwpck_require__(147);
+// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
+var core = __nccwpck_require__(24);
+;// CONCATENATED MODULE: ./src/policies.ts
+
+function get(action) {
+    const files = external_fs_.readdirSync('.github/akita/policies/');
+    const matchedPolicy = files.map(function (file) {
+        let policy = JSON.parse(external_fs_.readFileSync(`policies/${file}`).toString());
+        return policy;
+    })
+        .filter((policy) => {
+        return policy.action === action;
+    })[0];
+    return matchedPolicy;
+}
+
+;// CONCATENATED MODULE: ./src/authorization.ts
+function authorization_allowed(claims, policy) {
+    const allowed = policy.permissions.map((permission) => {
+        const fullPermission = Object.assign(Object.assign({}, claims), permission);
+        return JSON.stringify(fullPermission) === JSON.stringify(claims);
+    }).includes(true);
+    return allowed;
+}
+
 ;// CONCATENATED MODULE: external "buffer"
 const external_buffer_namespaceObject = require("buffer");
 ;// CONCATENATED MODULE: external "crypto"
@@ -6176,12 +6203,34 @@ async function generate_secret_generateSecret(alg, options) {
 
 
 
-// EXTERNAL MODULE: external "fs"
-var external_fs_ = __nccwpck_require__(147);
-// EXTERNAL MODULE: ./node_modules/@actions/core/lib/core.js
-var core = __nccwpck_require__(24);
-;// CONCATENATED MODULE: ./src/index.ts
+;// CONCATENATED MODULE: ./src/token.ts
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+
+const ISSUER = 'https://token.actions.githubusercontent.com';
+const AUDIENCE = process.env.AUDIENCE;
+const GITHUB_JWKS_URL = 'https://token.actions.githubusercontent.com/.well-known/jwks';
+function extractClaims(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const JWKS = createRemoteJWKSet(new URL(GITHUB_JWKS_URL));
+        const { payload, protectedHeader } = yield jwtVerify(token, JWKS, {
+            issuer: ISSUER,
+            audience: AUDIENCE,
+        });
+        console.log(protectedHeader);
+        return payload;
+    });
+}
+
+;// CONCATENATED MODULE: ./src/index.ts
+var src_awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -6193,49 +6242,18 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const ISSUER = 'https://token.actions.githubusercontent.com';
-const AUDIENCE = process.env.AUDIENCE;
-const GITHUB_JWKS_URL = 'https://token.actions.githubusercontent.com/.well-known/jwks';
-function extractTokenClaims(token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const JWKS = createRemoteJWKSet(new URL(GITHUB_JWKS_URL));
-        const { payload } = yield jwtVerify(token, JWKS, {
-            issuer: ISSUER,
-            audience: AUDIENCE,
-        });
-        return payload;
-    });
-}
-function checkAllowed(claims, policy) {
-    const allowed = policy.permissions.map((permission) => {
-        const fullPermission = Object.assign(Object.assign({}, claims), permission);
-        return JSON.stringify(fullPermission) === JSON.stringify(claims);
-    }).includes(true);
-    return allowed;
-}
-function getPolicies() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const files = external_fs_.readdirSync('policies/');
-        const policies = files.map(function (file) {
-            const policy = JSON.parse(external_fs_.readFileSync(`policies/${file}`).toString());
-            return policy;
-        });
-        return policies;
-    });
+
+
+function getInput() {
+    return JSON.parse(external_fs_.readFileSync('payload.json').toString());
 }
 function handler() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const payload = JSON.parse(external_fs_.readFileSync('payload.json').toString());
-        const policies = yield getPolicies();
-        const matchedPolicy = policies.filter((policy) => {
-            return policy.action === payload.action;
-        })[0];
-        const claims = yield extractTokenClaims(payload.client_payload.token);
-        const allowed = checkAllowed(claims, matchedPolicy);
-        if (allowed) {
-            process.exit(0);
-        }
-        else {
+    return src_awaiter(this, void 0, void 0, function* () {
+        const payload = getInput();
+        const matchedPolicy = get(payload.action);
+        const claims = yield extractClaims(payload.client_payload.token);
+        const allowed = authorization_allowed(claims, matchedPolicy);
+        if (!allowed) {
             core.setFailed('Not allowed to execute the requested workflow.');
         }
     });
