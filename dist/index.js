@@ -6220,11 +6220,10 @@ const GITHUB_JWKS_URL = 'https://token.actions.githubusercontent.com/.well-known
 function extractClaims(token) {
     return __awaiter(this, void 0, void 0, function* () {
         const JWKS = createRemoteJWKSet(new URL(GITHUB_JWKS_URL));
-        const { payload, protectedHeader } = yield jwtVerify(token, JWKS, {
+        const { payload } = yield jwtVerify(token, JWKS, {
             issuer: ISSUER,
             audience: AUDIENCE,
         });
-        console.log(protectedHeader);
         return payload;
     });
 }
