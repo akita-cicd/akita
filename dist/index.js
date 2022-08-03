@@ -2164,7 +2164,7 @@ var core = __nccwpck_require__(24);
 function get(action) {
     const files = external_fs_.readdirSync('.github/akita/policies/');
     const matchedPolicy = files.map(function (file) {
-        let policy = JSON.parse(external_fs_.readFileSync(`policies/${file}`).toString());
+        let policy = JSON.parse(external_fs_.readFileSync(`.github/akita/policies/${file}`).toString());
         return policy;
     })
         .filter((policy) => {
