@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
+    "rootDirs": [
+      "src/"
+    ],
+    "paths": {
+      "tests/*": [
+        "tests/*"
+      ]
+    },
     "target": "es2015",
     "moduleResolution": "node"
   }
