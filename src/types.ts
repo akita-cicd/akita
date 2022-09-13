@@ -46,5 +46,7 @@ type triggerType = {
   action: string
   repository: any
   sender: any
+  claims?: githubClaimsType
 }
+
 export {triggerType, policyType, githubClaimsType, workflowInputs}
