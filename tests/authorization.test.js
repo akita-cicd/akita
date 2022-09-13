@@ -1,4 +1,6 @@
-import { allowed } from '../src/authorization';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const authorization_1 = require("../src/authorization");
 const tokenClaims = {
     jti: "3b1f8b0a-c992-4ce9-bd17-e5d019a41927",
     sub: "repo:mthbernardes/actions-test:ref:refs/heads/main",
@@ -34,7 +36,7 @@ describe('testing authorization.', () => {
             description: 'test policy',
             inputs: []
         };
-        expect(allowed(tokenClaims, policy)).toBe(true);
+        expect((0, authorization_1.allowed)(tokenClaims, policy)).toBe(true);
     });
     test('when it contains permissions and does not allow.', () => {
         const policy = {
@@ -43,7 +45,7 @@ describe('testing authorization.', () => {
             description: 'test policy',
             inputs: []
         };
-        expect(allowed(tokenClaims, policy)).toBe(false);
+        expect((0, authorization_1.allowed)(tokenClaims, policy)).toBe(false);
     });
     test('when it does not contain permissions and do not allow it.', () => {
         const policy = {
@@ -52,6 +54,7 @@ describe('testing authorization.', () => {
             description: 'test policy',
             inputs: []
         };
-        expect(allowed(tokenClaims, policy)).toBe(false);
+        expect((0, authorization_1.allowed)(tokenClaims, policy)).toBe(false);
     });
 });
+//# sourceMappingURL=authorization.test.js.map

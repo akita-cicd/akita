@@ -4,13 +4,18 @@
     "rootDirs": [
       "src/"
     ],
+    "declaration": true,
+    "importHelpers": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "strict": true,
     "baseUrl": "",
     "paths": {
       "tests/*": [
         "tests/*"
       ]
     },
-    "target": "es2015",
+    "target": "es2022",
     "moduleResolution": "node"
   }
 }
