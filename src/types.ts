@@ -38,6 +38,7 @@ type policyType = {
 type triggerIntentType = {
   token: string,
   workflowInputs: workflowInputs
+  claims?: githubClaimsType
 }
 
 type triggerType = {
@@ -46,7 +47,6 @@ type triggerType = {
   action: string
   repository: any
   sender: any
-  claims?: githubClaimsType
 }
 
 export {triggerType, policyType, githubClaimsType, workflowInputs}

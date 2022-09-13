@@ -8135,7 +8135,7 @@ async function handler() {
     if (!allowed) {
         core.setFailed('Not allowed to execute the requested workflow.');
     }
-    payload.claims = claims;
+    payload.client_payload.claims = claims;
     fs.writeFileSync('payload.json', JSON.stringify(payload));
 }
 ;
