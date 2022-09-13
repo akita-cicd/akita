@@ -18,7 +18,7 @@ async function handler() {
     core.setFailed('Not allowed to execute the requested workflow.');
   }
   payload.claims = claims
-  fs.writeFileSync('payload.json', JSON.stringify(payload), 'utf8');
+  fs.writeFileSync('payload.json', JSON.stringify(payload));
 };
 
 handler();
