@@ -11,7 +11,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@actions/core": "^1.9.1",
+    "@actions/core": "^1.10.0",
     "@types/node": "^18.0.6",
     "jose": "^4.9.2"
   },
